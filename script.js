@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     output.innerHTML = resultsHTML;
 
-    // TOOLTIP LOGIC — SAME AS INJURY CALCULATOR
+    // TOOLTIP LOGIC
     document.querySelectorAll('.tooltip-trigger').forEach(trigger => {
       const content = trigger.nextElementSibling;
       trigger.addEventListener('mouseenter', () => content.classList.add('show'));
