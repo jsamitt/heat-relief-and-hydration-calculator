@@ -1,4 +1,4 @@
-// Rest Break & Hydration Scheduler – NIOSH/OSHA + Auto-Weather
+// Rest Break & Hydration Scheduler – NIOSH/OSHA + Auto-Weather (FIXED)
 document.addEventListener('DOMContentLoaded', () => {
   const output = document.getElementById('output');
 
@@ -19,45 +19,50 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('search-zip').addEventListener('click', () => {
     const zip = document.getElementById('zip-input').value.trim();
     if (!zip) return;
-    fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${zip}&count=1`)
+    fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${zip}&country=US&count=1`)
       .then(r => r.json())
       .then(data => {
-        if (data.results?.[0]) {
+        if (data.results && data.results[0]) {
           const { latitude, longitude } = data.results[0];
           fetchWeather(latitude, longitude);
         } else {
-          alert('ZIP not found');
+          alert('ZIP not found in US');
         }
-      });
+      })
+      .catch(() => alert('ZIP search failed – enter manually'));
   });
 
-  // === 3. Manual Inputs (always always) ===
+  // === 3. Manual Inputs (always active) ===
   const inputs = ['high-temp', 'humidity', 'cloud-cover', 'wind-speed', 'work-rate', 'acclimatized'];
   inputs.forEach(id => {
     const el = document.getElementById(id);
     if (el) {
-      el.addEventListener('input', calculateSchedule);
+      el.addEventListener('input', () => setTimeout(calculateSchedule, 100));
       el.addEventListener('change', calculateSchedule);
     }
   });
 
-  // === Fetch Real-Time Weather (Current) ===
+  // === Fetch Real-Time Weather ===
   function fetchWeather(lat, lon) {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,cloud_cover,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph`;
     fetch(url)
       .then(r => r.json())
       .then(data => {
+        if (!data.current) throw new Error('No data');
         const c = data.current;
         document.getElementById('high-temp').value = Math.round(c.temperature_2m);
         document.getElementById('humidity').value = c.relative_humidity_2m;
         document.getElementById('cloud-cover').value = c.cloud_cover;
         document.getElementById('wind-speed').value = c.wind_speed_10m.toFixed(1);
-        calculateSchedule();
+        calculateSchedule(); // Force update
       })
-      .catch(() => alert('Weather fetch failed – enter manually'));
+      .catch(() => {
+        // Don't block manual entry
+        console.warn('Weather fetch failed');
+      });
   }
 
-  // === WBGT + Schedule Logic ===
+  // === WBGT + Schedule Logic (One Hourly Rule) ===
   function calculateSchedule() {
     const highTempF = parseFloat(document.getElementById('high-temp').value) || 0;
     const humidity = parseFloat(document.getElementById('humidity').value) || 0;
