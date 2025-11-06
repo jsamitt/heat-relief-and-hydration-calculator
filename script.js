@@ -23,17 +23,22 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById(id).addEventListener('input', calculateSchedule);
   });
 
+    // === Fetch Weather ===
   function fetchWeather(lat, lon) {
-    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,cloud_cover,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph`)
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,cloud_cover,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph`;
+    fetch(url)
       .then(r => r.json())
-      .then(d => {
-        const c = d.current;
+      .then(data => {
+        const c = data.current;
         document.getElementById('high-temp').value = Math.round(c.temperature_2m);
         document.getElementById('humidity').value = c.relative_humidity_2m;
         document.getElementById('cloud-cover').value = c.cloud_cover;
         document.getElementById('wind-speed').value = c.wind_speed_10m.toFixed(1);
-        calculateSchedule();
-      });
+
+        // Force calculation after DOM update
+        setTimeout(calculateSchedule, 100);
+      })
+      .catch(() => alert('Weather fetch failed – enter manually'));
   }
 
   function calculateSchedule() {
