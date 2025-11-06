@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   });
 
-  // === 3. Manual Inputs (always active) ===
+  // === 3. Manual Inputs (always always) ===
   const inputs = ['high-temp', 'humidity', 'cloud-cover', 'wind-speed', 'work-rate', 'acclimatized'];
   inputs.forEach(id => {
     const el = document.getElementById(id);
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .catch(() => alert('Weather fetch failed – enter manually'));
   }
 
-  // === WBGT + Schedule Logic (One Hourly Rule) ===
+  // === WBGT + Schedule Logic ===
   function calculateSchedule() {
     const highTempF = parseFloat(document.getElementById('high-temp').value) || 0;
     const humidity = parseFloat(document.getElementById('humidity').value) || 0;
