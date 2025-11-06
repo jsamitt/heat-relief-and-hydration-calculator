@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-    // === Fetch Weather (FIXED: Force selects + calc) ===
+    // === Fetch Weather (FIXED: No defaults, calc after user picks) ===
   function fetchWeather(lat, lon) {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,cloud_cover,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph`;
     fetch(url)
@@ -41,15 +41,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('cloud-cover').value = c.cloud_cover;
         document.getElementById('wind-speed').value = c.wind_speed_10m.toFixed(1);
 
-        // Auto-select defaults if empty
-        if (!document.getElementById('work-rate').value) {
-          document.getElementById('work-rate').value = 'moderate';
-        }
-        if (!document.getElementById('acclimatized').value) {
-          document.getElementById('acclimatized').value = 'yes';
-        }
+        // Clear work inputs so user must choose
+        document.getElementById('work-rate').value = '';
+        document.getElementById('acclimatized').value = '';
 
-        setTimeout(calculateSchedule, 150);
+        // Show message
+        output.innerHTML = '<p style="color:#1976d2; font-weight:600;">Weather loaded! Please select Work Rate and Acclimatized status to see recommendation.</p>';
       })
       .catch(() => console.warn('Weather fetch failed'));
   }
