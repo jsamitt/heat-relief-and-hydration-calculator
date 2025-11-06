@@ -1,18 +1,21 @@
-// Rest Break & Hydration Scheduler – NIOSH/OSHA + Auto-Weather (FINAL FIX)
+// Rest Break & Hydration Scheduler – NIOSH/OSHA + Auto-Weather (FINAL)
 document.addEventListener('DOMContentLoaded', () => {
   const output = document.getElementById('output');
 
-  // === 1. Use My Location ===
+   // === 1. Use My Location ===
   document.getElementById('use-location').addEventListener('click', () => {
     if (!navigator.geolocation) {
       alert('Geolocation not supported');
       return;
     }
-    navigator.geolocation.getCurrentPosition(pos => {
-      const lat = pos.coords.latitude.toFixed(4);
-      const lon = pos.coords.longitude.toFixed(4);
-      fetchWeather(lat, lon);
-    }, () => alert('Location denied – use ZIP or manual'));
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const lat = pos.coords.latitude.toFixed(4);
+        const lon = pos.coords.longitude.toFixed(4);
+        fetchWeather(lat, lon);
+      },
+      () => alert('Location denied – use ZIP or manual')
+    );
   });
 
   // === 2. ZIP Code Search ===
@@ -26,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const { latitude, longitude } = data.results[0];
           fetchWeather(latitude, longitude);
         } else {
-          alert('ZIP not found in US');
+          alert('ZIP not found');
         }
       })
       .catch(() => alert('ZIP search failed'));
@@ -37,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
   inputs.forEach(id => {
     const el = document.getElementById(id);
     if (el) {
-      el.addEventListener('input', () => setTimeout(calculateSchedule, 50));
+      el.addEventListener('input', () => setTimeout(calculateSchedule, 100));
       el.addEventListener('change', calculateSchedule);
     }
   });
@@ -48,18 +51,17 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch(url)
       .then(r => r.json())
       .then(data => {
-        if (!data.current) throw new Error('No data');
         const c = data.current;
         document.getElementById('high-temp').value = Math.round(c.temperature_2m);
         document.getElementById('humidity').value = c.relative_humidity_2m;
         document.getElementById('cloud-cover').value = c.cloud_cover;
         document.getElementById('wind-speed').value = c.wind_speed_10m.toFixed(1);
-        setTimeout(calculateSchedule, 100); // Force calc after fill
+        setTimeout(calculateSchedule, 150); // Force calc
       })
       .catch(() => console.warn('Weather fetch failed'));
   }
 
-  // === CALCULATE SCHEDULE ===
+  // === CALCULATE ===
   function calculateSchedule() {
     const highTempF = parseFloat(document.getElementById('high-temp').value) || 0;
     const humidity = parseFloat(document.getElementById('humidity').value) || 0;
@@ -68,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const workRate = document.getElementById('work-rate').value;
     const acclimatized = document.getElementById('acclimatized').value;
 
-    if (highTempF <= 0 || humidity < 0 || cloudCover < 0 || windSpeed < 0 || !workRate || !acclimatized) {
+    if (!highTempF || !humidity || !cloudCover || !windSpeed || !workRate || !acclimatized) {
       output.innerHTML = '<p class="placeholder">Please complete all fields.</p>';
       return;
     }
