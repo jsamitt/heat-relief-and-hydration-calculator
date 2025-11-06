@@ -3,18 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Heat Relief & Hydration Scheduler</title>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:;">
+  <title>Heat Relief & Hydration Calculator</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>Rest Break & Hydration Scheduler</h1>
-      <p class="subtitle">NIOSH/OSHA-based heat stress schedule (WBGT, REL/RAL)</p>
+      <h1>Heat Relief & Hydration Calculator</h1>
+      <p class="subtitle">NIOSH/OSHA-based heat stress schedule</p>
     </header>
 
-        <section class="inputs">
+    <section class="inputs">
       <!-- AUTO-FILL BAR -->
       <div style="text-align:center; margin:1.5rem 0;">
         <button id="use-location" style="padding:0.75rem 1.5rem; font-size:1rem; background:#1976d2; color:white; border:none; border-radius:8px; cursor:pointer; margin-right:0.5rem;">
@@ -62,10 +61,14 @@
           <option value="no">No</option>
         </select>
       </div>
-    </section> 
-    
+    </section>
+
+    <section class="output" id="output">
+      <p class="placeholder">Enter data to see recommendation.</p>
+    </section>
+
     <footer class="disclaimer">
-      <p><strong>Disclaimer:</strong> Educational tool based on NIOSH/OSHA guidelines. Not a substitute for site-specific heat illness prevention programs.</p>
+      <p><strong>Disclaimer:</strong> Educational tool. Source: NIOSH/OSHA.</p>
     </footer>
   </div>
 
