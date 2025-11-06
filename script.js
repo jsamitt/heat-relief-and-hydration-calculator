@@ -1,4 +1,4 @@
-// Rest Break & Hydration Scheduler – NIOSH/OSHA + Auto-Weather (FIXED)
+// Rest Break & Hydration Scheduler – NIOSH/OSHA + Auto-Weather (FINAL FIX)
 document.addEventListener('DOMContentLoaded', () => {
   const output = document.getElementById('output');
 
@@ -22,27 +22,27 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${zip}&country=US&count=1`)
       .then(r => r.json())
       .then(data => {
-        if (data.results && data.results[0]) {
+        if (data.results?.[0]) {
           const { latitude, longitude } = data.results[0];
           fetchWeather(latitude, longitude);
         } else {
           alert('ZIP not found in US');
         }
       })
-      .catch(() => alert('ZIP search failed – enter manually'));
+      .catch(() => alert('ZIP search failed'));
   });
 
-  // === 3. Manual Inputs (always active) ===
+  // === 3. Manual Inputs ===
   const inputs = ['high-temp', 'humidity', 'cloud-cover', 'wind-speed', 'work-rate', 'acclimatized'];
   inputs.forEach(id => {
     const el = document.getElementById(id);
     if (el) {
-      el.addEventListener('input', () => setTimeout(calculateSchedule, 100));
+      el.addEventListener('input', () => setTimeout(calculateSchedule, 50));
       el.addEventListener('change', calculateSchedule);
     }
   });
 
-  // === Fetch Real-Time Weather ===
+  // === Fetch Weather ===
   function fetchWeather(lat, lon) {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,cloud_cover,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph`;
     fetch(url)
@@ -54,15 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('humidity').value = c.relative_humidity_2m;
         document.getElementById('cloud-cover').value = c.cloud_cover;
         document.getElementById('wind-speed').value = c.wind_speed_10m.toFixed(1);
-        calculateSchedule(); // Force update
+        setTimeout(calculateSchedule, 100); // Force calc after fill
       })
-      .catch(() => {
-        // Don't block manual entry
-        console.warn('Weather fetch failed');
-      });
+      .catch(() => console.warn('Weather fetch failed'));
   }
 
-  // === WBGT + Schedule Logic (One Hourly Rule) ===
+  // === CALCULATE SCHEDULE ===
   function calculateSchedule() {
     const highTempF = parseFloat(document.getElementById('high-temp').value) || 0;
     const humidity = parseFloat(document.getElementById('humidity').value) || 0;
@@ -111,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const hydrationQuarts = m > 300 ? 1.5 : m > 180 ? 1.25 : 1;
     const note = restMin > 30 ? 'Consider shifting to cooler area or indoors.' : 'Monitor for heat stress symptoms.';
 
-    let resultsHTML = `
+    output.innerHTML = `
       <h3>Heat Stress Summary</h3>
       <p><strong>WBGT:</strong> ${wbgtF.toFixed(1)}°F <em style="color:#666;">(Wind: ${windSpeed} mph ↓ WBGT)</em></p>
       <p><strong>Limit Applied:</strong> ${acclimatized === 'yes' ? 'REL (Acclimatized)' : 'RAL (Unacclimatized)'}</p>
@@ -129,10 +126,8 @@ document.addEventListener('DOMContentLoaded', () => {
         <em>Based on NIOSH 2016 Criteria and OSHA proposed heat rule. WBGT uses current or forecast conditions. Source: Open-Meteo (free API).</em>
       </p>
     `;
-
-    output.innerHTML = resultsHTML;
   }
 
-  // Initial empty state
+  // Initial
   calculateSchedule();
 });
