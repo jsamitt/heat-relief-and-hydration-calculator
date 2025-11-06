@@ -1,4 +1,3 @@
-// Rest Break & Hydration Scheduler – 3 ways, 100% working
 document.addEventListener('DOMContentLoaded', () => {
   const output = document.getElementById('output');
 
@@ -6,11 +5,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('use-location').addEventListener('click', () => {
     navigator.geolocation.getCurrentPosition(
       p => fetchWeather(p.coords.latitude.toFixed(4), p.coords.longitude.toFixed(4)),
-      () => alert('Location denied – try ZIP or manual')
+      () => alert('Location denied')
     );
   });
 
-  // 2. ZIP Code
+  // 2. ZIP
   document.getElementById('search-zip').addEventListener('click', () => {
     const zip = document.getElementById('zip-input').value.trim();
     if (!zip) return;
@@ -19,13 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(d => d.results?.[0] ? fetchWeather(d.results[0].latitude, d.results[0].longitude) : alert('ZIP not found'));
   });
 
-  // Manual inputs
+  // Manual
   ['high-temp','humidity','cloud-cover','wind-speed','work-rate','acclimatized'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('input', () => setTimeout(calculateSchedule, 100));
+    document.getElementById(id).addEventListener('input', calculateSchedule);
   });
 
-  // Fetch weather
   function fetchWeather(lat, lon) {
     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,cloud_cover,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph`)
       .then(r => r.json())
@@ -39,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
-  // CALCULATE
   function calculateSchedule() {
     const highTempF = +document.getElementById('high-temp').value || 0;
     const humidity = +document.getElementById('humidity').value || 0;
