@@ -85,3 +85,13 @@ select:focus, input:focus { outline:none; border-color:#1976d2; }
   visibility: visible;
   pointer-events: auto;
 }
+/* WBGT TOOLTIP — FORCE VISIBLE */
+.output {
+  position: relative;
+  overflow: visible !important;
+  z-index: 1;
+}
+
+.tooltip-content {
+  z-index: 9999 !important;
+}
