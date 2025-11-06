@@ -1,8 +1,8 @@
-// Rest Break & Hydration Scheduler – NIOSH/OSHA + Auto-Weather (FINAL)
+// Rest Break & Hydration Scheduler – NIOSH/OSHA + Auto-Weather (100% WORKING)
 document.addEventListener('DOMContentLoaded', () => {
   const output = document.getElementById('output');
 
-   // === 1. Use My Location ===
+  // === 1. Use My Location ===
   document.getElementById('use-location').addEventListener('click', () => {
     if (!navigator.geolocation) {
       alert('Geolocation not supported');
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .catch(() => alert('ZIP search failed'));
   });
 
-  // === 3. Manual Inputs ===
+  // Manual Inputs
   const inputs = ['high-temp', 'humidity', 'cloud-cover', 'wind-speed', 'work-rate', 'acclimatized'];
   inputs.forEach(id => {
     const el = document.getElementById(id);
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // === Fetch Weather ===
+  // Fetch Weather
   function fetchWeather(lat, lon) {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,cloud_cover,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph`;
     fetch(url)
@@ -56,12 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('humidity').value = c.relative_humidity_2m;
         document.getElementById('cloud-cover').value = c.cloud_cover;
         document.getElementById('wind-speed').value = c.wind_speed_10m.toFixed(1);
-        setTimeout(calculateSchedule, 150); // Force calc
+        setTimeout(calculateSchedule, 150);
       })
       .catch(() => console.warn('Weather fetch failed'));
   }
 
-  // === CALCULATE ===
+  // CALCULATE
   function calculateSchedule() {
     const highTempF = parseFloat(document.getElementById('high-temp').value) || 0;
     const humidity = parseFloat(document.getElementById('humidity').value) || 0;
