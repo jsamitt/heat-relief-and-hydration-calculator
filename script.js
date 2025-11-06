@@ -91,7 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let resultsHTML = `
       <h3>Heat Stress Summary</h3>
-      <p style="position:relative;"><strong>WBGT:</strong> ${wbgtF.toFixed(1)}°F 
+      <p style="position:relative; display:inline-block;">
+        <strong>WBGT:</strong> ${wbgtF.toFixed(1)}°F 
         <span class="tooltip-trigger">?</span>
         <div class="tooltip-content">
           <p style="margin:0 0 0.5rem 0; font-weight:600;">What is WBGT?</p>
