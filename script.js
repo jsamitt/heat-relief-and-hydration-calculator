@@ -60,9 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const solarMax = 800;
     const solar = solarMax * (1 - cloudCover / 100);
     let Tg = tempC + (solar / 100);
-    if (windSpeed > 1) {
-      Tg -= 0.3 * Math.log(windSpeed);
-    }
+    if (windSpeed > 1) Tg -= 0.3 * Math.log(windSpeed);
     const wbgt = 0.7 * Tw + 0.2 * Tg + 0.1 * Ta;
     const wbgtF = wbgt * 9/5 + 32;
 
@@ -87,20 +85,27 @@ document.addEventListener('DOMContentLoaded', () => {
     workMin = Math.max(5, workMin / adjustment);
     restMin = 60 - workMin;
     const hydrationQuarts = m > 300 ? 1.5 : m > 180 ? 1.25 : 1;
+    const ouncesPer15Min = Math.round((hydrationQuarts * 32) / 4); // 1 quart = 32 oz, 4 intervals per hour
 
     const note = restMin > 30 ? 'Consider shifting to cooler area or indoors.' : 'Monitor for heat stress symptoms.';
 
     let resultsHTML = `
       <h3>Heat Stress Summary</h3>
-      <p><strong>WBGT:</strong> ${wbgtF.toFixed(1)}°F <em style="color:#666;">(Wind: ${windSpeed} mph ↓ WBGT)</em></p>
-      <p><strong>Limit Applied:</strong> ${acclimatized === 'yes' ? 'REL (Acclimatized)' : 'RAL (Unacclimatized)'}</p>
+      <p><strong>WBGT:</strong> ${wbgtF.toFixed(1)}°F 
+        <span class="tooltip-trigger" style="display:inline-block; width:18px; height:18px; margin-left:6px; background:#1976d2; color:white; font-weight:bold; font-size:11px; line-height:18px; text-align:center; border-radius:50%; cursor:pointer;">?</span>
+        <div class="tooltip-content" style="display:none; position:absolute; top:100%; left:0; background:#1a1a1a; color:white; padding:12px 14px; border-radius:8px; font-size:0.85rem; line-height:1.5; max-width:320px; box-shadow:0 6px 16px rgba(0,0,0,0.25); z-index:9999; margin-top:8px;">
+          <p style="margin:0 0 0.5rem 0; font-weight:600;">What is WBGT?</p>
+          <p style="margin:0;">WBGT stands for Wet Bulb Globe Temperature. It combines air temperature, humidity, wind, and sun to measure how hot it *feels* to the body. It's more accurate than heat index because it accounts for all factors that affect heat stress. The military, sports teams, and OSHA use WBGT to protect workers and athletes.</p>
+        </div>
+      </p>
+      <p><strong>Limit Applied:</strong> ${acclimatized === 'yes' ? 'REL (acclimatized worker limit)' : 'RAL (un-acclimatized worker limit)'}</p>
       <p><strong>Work Intensity:</strong> ${workRate.charAt(0).toUpperCase() + workRate.slice(1)} (${m} W/m²)</p>
 
       <h3>Per-Hour Recommendation</h3>
       <div style="background:#fff; padding:1rem; border-radius:8px; margin:1rem 0; border:1px solid #ddd;">
         <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Work:</strong> ${workMin.toFixed(0)} minutes</p>
-        <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Rest/Hydrate:</strong> ${restMin.toFixed(0)} minutes</p>
-        <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Hydration:</strong> ${hydrationQuarts.toFixed(1)} quarts (about 1 cup every 15 min)</p>
+        <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Rest/seek cooler work area:</strong> ${restMin.toFixed(0)} minutes</p>
+        <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Hydration:</strong> ${hydrationQuarts.toFixed(1)} quarts (${ouncesPer15Min} oz every 15 min)</p>
         <p style="margin:0.5rem 0; color:#d32f2f;"><strong>Note:</strong> ${note}</p>
       </div>
 
@@ -110,6 +115,19 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
 
     output.innerHTML = resultsHTML;
+
+    // Tooltip hover logic
+    document.querySelectorAll('.tooltip-trigger').forEach(trigger => {
+      const content = trigger.nextElementSibling;
+      trigger.addEventListener('mouseenter', () => content.style.display = 'block');
+      trigger.addEventListener('mouseleave', () => content.style.display = 'none');
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isVisible = content.style.display === 'block';
+        document.querySelectorAll('.tooltip-content').forEach(c => c.style.display = 'none');
+        content.style.display = isVisible ? 'none' : 'block';
+      });
+    });
   }
 
   // Initial
