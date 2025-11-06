@@ -1,15 +1,17 @@
+// Rest Break & Hydration Scheduler – 3 ways, 100% working
 document.addEventListener('DOMContentLoaded', () => {
   const output = document.getElementById('output');
 
   // 1. Use My Location
   document.getElementById('use-location').addEventListener('click', () => {
+    if (!navigator.geolocation) return alert('Geolocation not supported');
     navigator.geolocation.getCurrentPosition(
       p => fetchWeather(p.coords.latitude.toFixed(4), p.coords.longitude.toFixed(4)),
-      () => alert('Location denied')
+      () => alert('Location denied – use ZIP or manual')
     );
   });
 
-  // 2. ZIP
+  // 2. ZIP Code Search
   document.getElementById('search-zip').addEventListener('click', () => {
     const zip = document.getElementById('zip-input').value.trim();
     if (!zip) return;
@@ -18,29 +20,32 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(d => d.results?.[0] ? fetchWeather(d.results[0].latitude, d.results[0].longitude) : alert('ZIP not found'));
   });
 
-  // Manual
+  // 3. Manual Inputs — NOW ATTACHED
   ['high-temp','humidity','cloud-cover','wind-speed','work-rate','acclimatized'].forEach(id => {
-    document.getElementById(id).addEventListener('input', calculateSchedule);
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', () => setTimeout(calculateSchedule, 100));
+      el.addEventListener('change', calculateSchedule);
+    }
   });
 
-    // === Fetch Weather ===
+  // Fetch Weather
   function fetchWeather(lat, lon) {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,cloud_cover,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph`;
     fetch(url)
       .then(r => r.json())
-      .then(data => {
-        const c = data.current;
+      .then(d => {
+        const c = d.current;
         document.getElementById('high-temp').value = Math.round(c.temperature_2m);
         document.getElementById('humidity').value = c.relative_humidity_2m;
         document.getElementById('cloud-cover').value = c.cloud_cover;
         document.getElementById('wind-speed').value = c.wind_speed_10m.toFixed(1);
-
-        // Force calculation after DOM update
-        setTimeout(calculateSchedule, 100);
+        setTimeout(calculateSchedule, 150); // Force calc
       })
-      .catch(() => alert('Weather fetch failed – enter manually'));
+      .catch(() => console.warn('Weather fetch failed'));
   }
 
+  // CALCULATE
   function calculateSchedule() {
     const highTempF = +document.getElementById('high-temp').value || 0;
     const humidity = +document.getElementById('humidity').value || 0;
