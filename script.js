@@ -116,19 +116,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     output.innerHTML = resultsHTML;
 
-    // WBGT Tooltip — hover & click
+    // TOOLTIP LOGIC — SAME AS INJURY CALCULATOR
     document.querySelectorAll('.tooltip-trigger').forEach(trigger => {
       const content = trigger.nextElementSibling;
-      const show = () => content.classList.add('show');
-      const hide = () => content.classList.remove('show');
-
-      trigger.addEventListener('mouseenter', show);
-      trigger.addEventListener('mouseleave', hide);
+      trigger.addEventListener('mouseenter', () => content.classList.add('show'));
+      trigger.addEventListener('mouseleave', () => content.classList.remove('show'));
       trigger.addEventListener('click', (e) => {
         e.stopPropagation();
         const isOpen = content.classList.contains('show');
         document.querySelectorAll('.tooltip-content').forEach(c => c.classList.remove('show'));
-        if (!isOpen) show();
+        if (!isOpen) content.classList.add('show');
       });
     });
   }
