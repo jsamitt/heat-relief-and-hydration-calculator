@@ -33,7 +33,7 @@ select:focus, input:focus { outline:none; border-color:#1976d2; }
 @media (max-width: 480px) {
   .container { margin:1rem; padding:1rem; }
 }
-/* WBGT Tooltip */
+/* WBGT TOOLTIP — EXACT FROM INJURY CALCULATOR */
 .tooltip-trigger {
   display: inline-flex;
   align-items: center;
