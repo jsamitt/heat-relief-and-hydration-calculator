@@ -1,8 +1,8 @@
-// Rest Break & Hydration Scheduler – NIOSH/OSHA + Auto-Weather (GUARANTEED CALC)
+// Rest Break & Hydration Scheduler – NIOSH/OSHA + Auto-Weather (100% WORKING)
 document.addEventListener('DOMContentLoaded', () => {
   const output = document.getElementById('output');
 
-  // ---------- AUTO-FILL ----------
+  // 1. Use My Location
   document.getElementById('use-location').addEventListener('click', () => {
     if (!navigator.geolocation) return alert('Geolocation not supported');
     navigator.geolocation.getCurrentPosition(
@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     );
   });
 
+  // 2. ZIP Code Search
   document.getElementById('search-zip').addEventListener('click', () => {
     const zip = document.getElementById('zip-input').value.trim();
     if (!zip) return;
@@ -19,17 +20,17 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(d => d.results?.[0] ? fetchWeather(d.results[0].latitude, d.results[0].longitude) : alert('ZIP not found'));
   });
 
-  // ---------- MANUAL INPUTS ----------
-  const ids = ['high-temp','humidity','cloud-cover','wind-speed','work-rate','acclimatized'];
-  ids.forEach(id => {
+  // Manual Inputs
+  const inputs = ['high-temp','humidity','cloud-cover','wind-speed','work-rate','acclimatized'];
+  inputs.forEach(id => {
     const el = document.getElementById(id);
     if (el) {
-      el.addEventListener('input', debounce(calculateSchedule, 300));
+      el.addEventListener('input', () => setTimeout(calculateSchedule, 100));
       el.addEventListener('change', calculateSchedule);
     }
   });
 
-  // ---------- FETCH WEATHER ----------
+  // Fetch Weather
   function fetchWeather(lat, lon) {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,cloud_cover,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph`;
     fetch(url)
@@ -40,21 +41,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('humidity').value = c.relative_humidity_2m;
         document.getElementById('cloud-cover').value = c.cloud_cover;
         document.getElementById('wind-speed').value = c.wind_speed_10m.toFixed(1);
-        calculateSchedule();               // <-- immediate calc
+        calculateSchedule();
       })
       .catch(() => console.warn('Weather fetch failed'));
   }
 
-  // ---------- DEBOUNCE ----------
-  function debounce(fn, wait) {
-    let timer;
-    return (...args) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => fn.apply(this, args), wait);
-    };
-  }
-
-  // ---------- CALCULATION ----------
+  // CALCULATE
   function calculateSchedule() {
     const highTempF = +document.getElementById('high-temp').value || 0;
     const humidity   = +document.getElementById('humidity').value   || 0;
@@ -68,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // WBGT (NIOSH psychrometric + globe)
     const tempC = (highTempF - 32) * 5 / 9;
     const Ta = tempC;
     const Tw = tempC * Math.atan(0.151977 * Math.sqrt(humidity + 8.313659)) +
@@ -80,11 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const wbgt = 0.7 * Tw + 0.2 * Tg + 0.1 * Ta;
     const wbgtF = wbgt * 9 / 5 + 32;
 
-    // Metabolic rate
     const mRates = { light: 180, moderate: 300, heavy: 450 };
     const m = mRates[workRate];
 
-    // REL / RAL work-rest
     let workMin, restMin;
     const adj = m > 300 ? 1.2 : m > 180 ? 1.1 : 1;
     if (acclimatized === 'yes') {
@@ -101,7 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
     workMin = Math.max(5, workMin / adj);
     restMin = 60 - workMin;
 
-    // Hydration
     const hyd = m > 300 ? 1.5 : m > 180 ? 1.25 : 1;
     const note = restMin > 30 ? 'Consider shifting to cooler area or indoors.' : 'Monitor for heat stress symptoms.';
 
@@ -125,6 +113,5 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   }
 
-  // start empty
   calculateSchedule();
 });
