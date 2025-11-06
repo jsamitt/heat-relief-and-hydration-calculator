@@ -14,8 +14,8 @@
       <p class="subtitle">NIOSH/OSHA-based heat stress schedule (WBGT, REL/RAL)</p>
     </header>
 
-          <section class="inputs">
-      <!-- AUTO-FILL OPTIONS -->
+        <section class="inputs">
+      <!-- AUTO-FILL BAR -->
       <div style="text-align:center; margin:1.5rem 0;">
         <button id="use-location" style="padding:0.75rem 1.5rem; font-size:1rem; background:#1976d2; color:white; border:none; border-radius:8px; cursor:pointer; margin-right:0.5rem;">
           Use My Current Location
@@ -26,9 +26,9 @@
         </button>
       </div>
 
-      <h3>Weather Inputs (Auto-filled or Manual)</h3>
+      <h3>Weather Inputs</h3>
       <div class="field">
-        <label for="high-temp">Temperature ( °F ) <span class="req">*</span></label>
+        <label for="high-temp">Temperature (°F) <span class="req">*</span></label>
         <input type="number" id="high-temp" min="50" max="130" step="0.5" placeholder="e.g., 88" required />
       </div>
       <div class="field">
@@ -46,20 +46,20 @@
 
       <h3>Work Inputs</h3>
       <div class="field">
-        <label for="work-rate">Work Rate (Metabolic Rate) <span class="req">*</span></label>
+        <label for="work-rate">Work Rate <span class="req">*</span></label>
         <select id="work-rate" required>
           <option value="" disabled selected>Select...</option>
-          <option value="light">Light (e.g., walking, light tools)</option>
-          <option value="moderate">Moderate (e.g., lifting, drilling)</option>
-          <option value="heavy">Heavy (e.g., shoveling, heavy lifting)</option>
+          <option value="light">Light</option>
+          <option value="moderate">Moderate</option>
+          <option value="heavy">Heavy</option>
         </select>
       </div>
       <div class="field">
-        <label for="acclimatized">Worker Acclimatized? <span class="req">*</span></label>
+        <label for="acclimatized">Acclimatized? <span class="req">*</span></label>
         <select id="acclimatized" required>
           <option value="" disabled selected>Select...</option>
-          <option value="yes">Yes (REL - acclimatized)</option>
-          <option value="no">No (RAL - unacclimatized)</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
         </select>
       </div>
     </section> 
