@@ -89,11 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const note = restMin > 30 ? 'Consider shifting to cooler area or indoors.' : 'Monitor for heat stress symptoms.';
 
-    let resultsHTML = `
+        let resultsHTML = `
       <h3>Heat Stress Summary</h3>
       <p><strong>WBGT:</strong> ${wbgtF.toFixed(1)}°F 
-        <span class="tooltip-trigger" style="display:inline-block; width:18px; height:18px; margin-left:6px; background:#1976d2; color:white; font-weight:bold; font-size:11px; line-height:18px; text-align:center; border-radius:50%; cursor:pointer;">?</span>
-        <div class="tooltip-content" style="display:none; position:absolute; top:100%; left:0; background:#1a1a1a; color:white; padding:12px 14px; border-radius:8px; font-size:0.85rem; line-height:1.5; max-width:320px; box-shadow:0 6px 16px rgba(0,0,0,0.25); z-index:9999; margin-top:8px;">
+        <span class="tooltip-trigger">?</span>
+        <div class="tooltip-content">
           <p style="margin:0 0 0.5rem 0; font-weight:600;">What is WBGT?</p>
           <p style="margin:0;">WBGT stands for Wet Bulb Globe Temperature. It combines air temperature, humidity, wind, and sun to measure how hot it *feels* to the body. It's more accurate than heat index because it accounts for all factors that affect heat stress. The military, sports teams, and OSHA use WBGT to protect workers and athletes.</p>
         </div>
@@ -116,16 +116,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     output.innerHTML = resultsHTML;
 
-    // Tooltip hover logic
+    // WBGT Tooltip — hover & click
     document.querySelectorAll('.tooltip-trigger').forEach(trigger => {
       const content = trigger.nextElementSibling;
-      trigger.addEventListener('mouseenter', () => content.style.display = 'block');
-      trigger.addEventListener('mouseleave', () => content.style.display = 'none');
+      const show = () => content.classList.add('show');
+      const hide = () => content.classList.remove('show');
+
+      trigger.addEventListener('mouseenter', show);
+      trigger.addEventListener('mouseleave', hide);
       trigger.addEventListener('click', (e) => {
         e.stopPropagation();
-        const isVisible = content.style.display === 'block';
-        document.querySelectorAll('.tooltip-content').forEach(c => c.style.display = 'none');
-        content.style.display = isVisible ? 'none' : 'block';
+        const isOpen = content.classList.contains('show');
+        document.querySelectorAll('.tooltip-content').forEach(c => c.classList.remove('show'));
+        if (!isOpen) show();
       });
     });
   }
