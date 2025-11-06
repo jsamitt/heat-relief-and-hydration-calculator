@@ -14,19 +14,18 @@
       <p class="subtitle">NIOSH/OSHA-based heat stress schedule (WBGT, REL/RAL)</p>
     </header>
 
-        <section class="inputs">
+      <section class="inputs">
       <!-- AUTO-FILL OPTIONS -->
       <div style="text-align:center; margin:1.5rem 0;">
-  <form onsubmit="return false;">
-    <button type="button" id="use-location" style="padding:0.75rem 1.5rem; font-size:1rem; background:#1976d2; color:white; border:none; border-radius:8px; cursor:pointer; margin-right:0.5rem;">
-      Use My Current Location
-    </button>
-    <input type="text" id="zip-input" placeholder="or ZIP code (e.g., 10001)" style="padding:0.75rem; font-size:1rem; border:1px solid #ccc; border-radius:8px; width:160px;" />
-    <button type="button" id="search-zip" style="padding:0.75rem 1rem; font-size:1rem; background:#1976d2; color:white; border:none; border-radius:8px; cursor:pointer; margin-left:0.5rem;">
-      Go
-    </button>
-  </form>
-</div>
+        <button id="use-location" style="padding:0.75rem 1.5rem; font-size:1rem; background:#1976d2; color:white; border:none; border-radius:8px; cursor:pointer; margin-right:0.5rem;">
+          Use My Current Location
+        </button>
+        <input type="text" id="zip-input" placeholder="or ZIP code (e.g., 10001)" style="padding:0.75rem; font-size:1rem; border:1px solid #ccc; border-radius:8px; width:160px;" />
+        <button id="search-zip" style="padding:0.75rem 1rem; font-size:1rem; background:#1976d2; color:white; border:none; border-radius:8px; cursor:pointer; margin-left:0.5rem;">
+          Go
+        </button>
+      </div>
+
       <h3>Weather Inputs (Auto-filled or Manual)</h3>
       <div class="field">
         <label for="high-temp">Temperature (°F) <span class="req">*</span></label>
