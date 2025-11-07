@@ -1,12 +1,6 @@
-// Rest Break & Hydration Scheduler – NIOSH/OSHA Based
+// Rest Break & Hydration Scheduler – NIOSH/OSHA + Risk Messages + Validation
 document.addEventListener('DOMContentLoaded', () => {
   const output = document.getElementById('output');
-  const inputs = ['high-temp', 'humidity', 'cloud-cover', 'wind-speed', 'work-rate', 'acclimatized'];
-  inputs.forEach(id => {
-    const el = document.getElementById(id);
-    el.addEventListener('input', calculateSchedule);
-    el.addEventListener('change', calculateSchedule);
-  });
 
   // ZIP Code Search
   document.getElementById('search-zip').addEventListener('click', () => {
@@ -47,8 +41,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const workRate = document.getElementById('work-rate').value;
     const acclimatized = document.getElementById('acclimatized').value;
 
-    if (highTempF <= 0 || humidity < 0 || cloudCover < 0 || windSpeed < 0 || !workRate || !acclimatized) {
-      output.innerHTML = '<p class="placeholder">Please complete all fields.</p>';
+    // === VALIDATION ===
+    if (highTempF < 0 || highTempF > 150) {
+      output.innerHTML = '<p class="placeholder" style="color:#d32f2f;">Temperature must be 0–150°F</p>';
+      return;
+    }
+    if (humidity < 0 || humidity > 100) {
+      output.innerHTML = '<p class="placeholder" style="color:#d32f2f;">Humidity must be 0–100%</p>';
+      return;
+    }
+    if (cloudCover < 0 || cloudCover > 100) {
+      output.innerHTML = '<p class="placeholder" style="color:#d32f2f;">Cloud cover must be 0–100%</p>';
+      return;
+    }
+    if (windSpeed < 0 || windSpeed > 100) {
+      output.innerHTML = '<p class="placeholder" style="color:#d32f2f;">Wind speed must be 0–100 mph</p>';
+      return;
+    }
+    if (!workRate || !acclimatized) {
+      output.innerHTML = '<p class="placeholder">Please select Work Rate and Acclimatized status.</p>';
       return;
     }
 
@@ -85,24 +96,32 @@ document.addEventListener('DOMContentLoaded', () => {
     workMin = Math.max(5, workMin / adjustment);
     restMin = 60 - workMin;
     const hydrationQuarts = m > 300 ? 1.5 : m > 180 ? 1.25 : 1;
-    const ouncesPer15Min = Math.round((hydrationQuarts * 32) / 4); // 1 quart = 32 oz, 4 intervals per hour
-
+    const ouncesPer15Min = Math.round((hydrationQuarts * 32) / 4);
     const note = restMin > 30 ? 'Consider shifting to cooler area or indoors.' : 'Monitor for heat stress symptoms.';
 
-        let resultsHTML = `
+    // Risk Message
+    let riskMessage = '';
+    if (wbgtF < 70) {
+      riskMessage = '<p style="color:#1976d2; font-weight:bold; margin:0.5rem 0;">Low risk of heat stress.</p>';
+    } else if (wbgtF >= 90) {
+      riskMessage = '<p style="color:#d32f2f; font-weight:bold; margin:0.5rem 0;">Danger: High risk of heat stress!</p>';
+    }
+
+    let resultsHTML = `
       <h3>Heat Stress Summary</h3>
-      <div style="position:relative; display:block;">
+      <p style="position:relative; display:inline-block;">
         <strong>WBGT:</strong> ${wbgtF.toFixed(1)}°F 
         <span class="tooltip-trigger">?</span>
         <div class="tooltip-content">
           <p style="margin:0 0 0.5rem 0; font-weight:600;">What is WBGT?</p>
           <p style="margin:0;">WBGT stands for Wet Bulb Globe Temperature. It combines air temperature, humidity, wind, and sun to measure how hot it *feels* to the body. It's more accurate than heat index because it accounts for all factors that affect heat stress. The military, sports teams, and OSHA use WBGT to protect workers and athletes.</p>
         </div>
-      </div>
+      </p>
       <p><strong>Limit Applied:</strong> ${acclimatized === 'yes' ? 'REL (acclimatized worker limit)' : 'RAL (un-acclimatized worker limit)'}</p>
       <p><strong>Work Intensity:</strong> ${workRate.charAt(0).toUpperCase() + workRate.slice(1)} (${m} W/m²)</p>
 
       <h3>Per-Hour Recommendation</h3>
+      ${riskMessage}
       <div style="background:#fff; padding:1rem; border-radius:8px; margin:1rem 0; border:1px solid #ddd;">
         <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Work:</strong> ${workMin.toFixed(0)} minutes</p>
         <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Rest/seek cooler work area:</strong> ${restMin.toFixed(0)} minutes</p>
