@@ -2,30 +2,41 @@
 document.addEventListener('DOMContentLoaded', () => {
   const output = document.getElementById('output');
 
-  // 1. ZIP Code Search
+  // === 1. Use My Location ===
+  document.getElementById('use-location').addEventListener('click', () => {
+    if (!navigator.geolocation) return alert('Geolocation not supported');
+    navigator.geolocation.getCurrentPosition(
+      p => fetchWeather(p.coords.latitude.toFixed(4), p.coords.longitude.toFixed(4)),
+      () => alert('Location denied – use ZIP or manual')
+    );
+  });
+
+  // === 2. ZIP Code Search ===
   document.getElementById('search-zip').addEventListener('click', () => {
     const zip = document.getElementById('zip-input').value.trim();
     if (!zip) return;
     fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${zip}&country=US&count=1`)
       .then(r => r.json())
-      .then(data => {
-        if (data.results?.[0]) {
-          const { latitude, longitude } = data.results[0];
-          fetchWeather(latitude, longitude);
-        } else {
-          alert('ZIP not found');
-        }
-      })
-      .catch(() => alert('ZIP search failed'));
+      .then(d => d.results?.[0] ? fetchWeather(d.results[0].latitude, d.results[0].longitude) : alert('ZIP not found'));
   });
 
-  // Fetch Weather
+  // === 3. Manual Inputs ===
+  const inputs = ['high-temp','humidity','cloud-cover','wind-speed','work-rate','acclimatized'];
+  inputs.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', () => setTimeout(calculateSchedule, 100));
+      el.addEventListener('change', calculateSchedule);
+    }
+  });
+
+  // === Fetch Weather ===
   function fetchWeather(lat, lon) {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,cloud_cover,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph`;
     fetch(url)
       .then(r => r.json())
-      .then(data => {
-        const c = data.current;
+      .then(d => {
+        const c = d.current;
         document.getElementById('high-temp').value = Math.round(c.temperature_2m);
         document.getElementById('humidity').value = c.relative_humidity_2m;
         document.getElementById('cloud-cover').value = c.cloud_cover;
@@ -35,17 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .catch(() => console.warn('Weather fetch failed'));
   }
 
-  // Manual Inputs — FIXED EVENT LISTENERS
-  const inputs = ['high-temp','humidity','cloud-cover','wind-speed','work-rate','acclimatized'];
-  inputs.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.addEventListener('input', calculateSchedule);
-      el.addEventListener('change', calculateSchedule);
-    }
-  });
-
-  // CALCULATE — ALWAYS RUNS
+  // === CALCULATE ===
   function calculateSchedule() {
     const highTempF = +document.getElementById('high-temp').value || 0;
     const humidity = +document.getElementById('humidity').value || 0;
@@ -92,13 +93,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const ouncesPer15Min = Math.round((hyd * 32) / 4);
     const note = restMin > 30 ? 'Consider shifting to cooler area or indoors.' : 'Monitor for heat stress symptoms.';
 
-    // Risk Message
     let riskMessage = '';
-    if (wbgtF < 70) {
-      riskMessage = '<p style="color:#1976d2; font-weight:bold; margin:0.5rem 0;">Low risk of heat stress.</p>';
-    } else if (wbgtF >= 90) {
-      riskMessage = '<p style="color:#d32f2f; font-weight:bold; margin:0.5rem 0;">Danger: High risk of heat stress!</p>';
-    }
+    if (wbgtF < 70) riskMessage = '<p style="color:#1976d2; font-weight:bold; margin:0.5rem 0;">Low risk of heat stress.</p>';
+    if (wbgtF >= 90) riskMessage = '<p style="color:#d32f2f; font-weight:bold; margin:0.5rem 0;">Danger: High risk of heat stress!</p>';
 
     output.innerHTML = `
       <h3>Heat Stress Summary</h3>
@@ -141,6 +138,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Initial
   calculateSchedule();
 });
