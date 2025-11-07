@@ -107,14 +107,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     output.innerHTML = `
       <h3>Heat Stress Summary</h3>
-      <p style="position:relative; display:inline-block;">
+      <div style="position:relative;">
         <strong>WBGT:</strong> ${wbgtF.toFixed(1)}°F 
         <span class="tooltip-trigger">?</span>
         <div class="tooltip-content">
           <p style="margin:0 0 0.5rem 0; font-weight:600;">What is WBGT?</p>
           <p style="margin:0;">WBGT stands for Wet Bulb Globe Temperature. It combines air temperature, humidity, wind, and sun to measure how hot it *feels* to the body. It's more accurate than heat index because it accounts for all factors that affect heat stress. The military, sports teams, and OSHA use WBGT to protect workers and athletes.</p>
         </div>
-      </p>
+      </div>
       <p><strong>Limit Applied:</strong> ${acclimatized === 'yes' ? 'REL (acclimatized worker limit)' : 'RAL (un-acclimatized worker limit)'}</p>
       <p><strong>Work Intensity:</strong> ${workRate.charAt(0).toUpperCase() + workRate.slice(1)} (${m} W/m²)</p>
 
@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </p>
     `;
 
-    // TOOLTIP LOGIC
+    // TOOLTIP LOGIC — 100% WORKING
     document.querySelectorAll('.tooltip-trigger').forEach(trigger => {
       const content = trigger.nextElementSibling;
       trigger.addEventListener('mouseenter', () => content.classList.add('show'));
