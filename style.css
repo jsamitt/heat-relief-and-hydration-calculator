@@ -33,7 +33,7 @@ select:focus, input:focus { outline:none; border-color:#1976d2; }
 @media (max-width: 480px) {
   .container { margin:1rem; padding:1rem; }
 }
-/* WBGT TOOLTIP — 100% WORKING */
+/* WBGT TOOLTIP — FINAL FIX */
 .tooltip-trigger {
   display: inline-flex;
   align-items: center;
@@ -84,13 +84,4 @@ select:focus, input:focus { outline:none; border-color:#1976d2; }
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-}
-/* FORCE TOOLTIP TO SHOW — OVERRIDE ANY CLIPPING */
-.output {
-  overflow: visible !important;
-  position: relative !important;
-}
-
-.tooltip-content {
-  z-index: 99999 !important;
 }
