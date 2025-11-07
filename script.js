@@ -1,15 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const output = document.getElementById('output');
 
-  // 1. Use My Location
-  document.getElementById('use-location').addEventListener('click', () => {
-    navigator.geolocation.getCurrentPosition(
-      p => fetchWeather(p.coords.latitude.toFixed(4), p.coords.longitude.toFixed(4)),
-      () => alert('Location denied')
-    );
-  });
-
-  // 2. ZIP
+  // ZIP ONLY
   document.getElementById('search-zip').addEventListener('click', () => {
     const zip = document.getElementById('zip-input').value.trim();
     if (!zip) return;
@@ -18,11 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(d => d.results?.[0] ? fetchWeather(d.results[0].latitude, d.results[0].longitude) : alert('ZIP not found'));
   });
 
-  // Manual
-  ['high-temp','humidity','cloud-cover','wind-speed','work-rate','acclimatized'].forEach(id => {
-    document.getElementById(id).addEventListener('input', calculateSchedule);
-  });
-
+  // Fetch Weather
   function fetchWeather(lat, lon) {
     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,cloud_cover,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph`)
       .then(r => r.json())
@@ -35,6 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
         calculateSchedule();
       });
   }
+
+  // Manual Inputs
+  ['high-temp','humidity','cloud-cover','wind-speed','work-rate','acclimatized'].forEach(id => {
+    document.getElementById(id).addEventListener('input', calculateSchedule);
+  });
 
   function calculateSchedule() {
     const highTempF = +document.getElementById('high-temp').value || 0;
@@ -82,19 +75,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const ouncesPer15Min = Math.round((hyd * 32) / 4);
     const note = restMin > 30 ? 'Consider shifting to cooler area or indoors.' : 'Monitor for heat stress symptoms.';
 
+    let riskMessage = '';
+    if (wbgtF < 70) riskMessage = '<p style="color:#1976d2; font-weight:bold; margin:0.5rem 0;">Low risk of heat stress.</p>';
+    if (wbgtF >= 90) riskMessage = '<p style="color:#d32f2f; font-weight:bold; margin:0.5rem 0;">Danger: High risk of heat stress!</p>';
+
     output.innerHTML = `
       <h3>Heat Stress Summary</h3>
-      <p><strong>WBGT:</strong> ${wbgtF.toFixed(1)}°F</p>
-      <p><strong>Limit:</> ${acclimatized === 'yes' ? 'REL' : 'RAL'}</p>
+      <p style="position:relative; display:inline-block;">
+        <strong>WBGT:</strong> ${wbgtF.toFixed(1)}°F 
+        <span class="tooltip-trigger">?</span>
+        <div class="tooltip-content">
+          <p style="margin:0 0 0.5rem 0; font-weight:600;">What is WBGT?</p>
+          <p style="margin:0;">WBGT stands for Wet Bulb Globe Temperature. It combines air temperature, humidity, wind, and sun to measure how hot it *feels* to the body. It's more accurate than heat index because it accounts for all factors that affect heat stress. The military, sports teams, and OSHA use WBGT to protect workers and athletes.</p>
+        </div>
+      </p>
+      <p><strong>Limit Applied:</strong> ${acclimatized === 'yes' ? 'REL (acclimatized worker limit)' : 'RAL (un-acclimatized worker limit)'}</p>
+      <p><strong>Work Intensity:</strong> ${workRate.charAt(0).toUpperCase() + workRate.slice(1)} (${m} W/m²)</p>
 
       <h3>Per-Hour Recommendation</h3>
-      <div style="background:#fff;padding:1rem;border-radius:8px;margin:1rem 0;border:1px solid #ddd;">
-        <p style="margin:0.5rem 0;font-size:1.1rem;"><strong>Work:</strong> ${workMin.toFixed(0)} minutes</p>
-        <p style="margin:0.5rem 0;font-size:1.1rem;"><strong>Rest/seek cooler work area:</strong> ${restMin.toFixed(0)} minutes</p>
-        <p style="margin:0.5rem 0;font-size:1.1rem;"><strong>Hydration:</strong> ${hyd.toFixed(1)} quarts (${ouncesPer15Min} oz every 15 min)</p>
-        <p style="margin:0.5rem 0;color:#d32f2f;"><strong>Note:</strong> ${note}</p>
+      ${riskMessage}
+      <div style="background:#fff; padding:1rem; border-radius:8px; margin:1rem 0; border:1px solid #ddd;">
+        <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Work:</strong> ${workMin.toFixed(0)} minutes</p>
+        <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Rest/seek cooler work area:</strong> ${restMin.toFixed(0)} minutes</p>
+        <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Hydration:</strong> ${hyd.toFixed(1)} quarts (${ouncesPer15Min} oz every 15 min)</p>
+        <p style="margin:0.5rem 0; color:#d32f2f;"><strong>Note:</strong> ${note}</p>
       </div>
+
+      <p class="note" style="margin-top:1rem; font-size:0.9rem; color:#555;">
+        <em>Based on NIOSH 2016 Criteria and OSHA proposed heat rule. WBGT uses current or forecast conditions. Source: Open-Meteo (free API).</em>
+      </p>
     `;
+
+    // TOOLTIP LOGIC
+    document.querySelectorAll('.tooltip-trigger').forEach(trigger => {
+      const content = trigger.nextElementSibling;
+      trigger.addEventListener('mouseenter', () => content.classList.add('show'));
+      trigger.addEventListener('mouseleave', () => content.classList.remove('show'));
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = content.classList.contains('show');
+        document.querySelectorAll('.tooltip-content').forEach(c => c.classList.remove('show'));
+        if (!isOpen) content.classList.add('show');
+      });
+    });
   }
 
   calculateSchedule();
