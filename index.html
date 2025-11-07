@@ -14,12 +14,9 @@
     </header>
 
     <section class="inputs">
-      <!-- ZIP + LOCATION BAR -->
+      <!-- ZIP ONLY -->
       <div style="text-align:center; margin:1.5rem 0;">
-        <button id="use-location" style="padding:0.75rem 1.5rem; font-size:1rem; background:#1976d2; color:white; border:none; border-radius:8px; cursor:pointer; margin-right:0.5rem;">
-          Use My Current Location
-        </button>
-        <input type="text" id="zip-input" placeholder="or ZIP code (e.g., 10001)" style="padding:0.75rem; font-size:1rem; border:1px solid #ccc; border-radius:8px; width:160px;" />
+        <input type="text" id="zip-input" placeholder="ZIP code (e.g., 10001)" style="padding:0.75rem; font-size:1rem; border:1px solid #ccc; border-radius:8px; width:160px;" />
         <button id="search-zip" style="padding:0.75rem 1rem; font-size:1rem; background:#1976d2; color:white; border:none; border-radius:8px; cursor:pointer; margin-left:0.5rem;">
           Go
         </button>
@@ -48,17 +45,17 @@
         <label for="work-rate">Work Rate <span class="req">*</span></label>
         <select id="work-rate" required>
           <option value="" disabled selected>Select...</option>
-          <option value="light">Light</option>
-          <option value="moderate">Moderate</option>
-          <option value="heavy">Heavy</option>
+          <option value="light">Light (e.g., walking)</option>
+          <option value="moderate">Moderate (e.g., lifting)</option>
+          <option value="heavy">Heavy (e.g., shovel work)</option>
         </select>
       </div>
       <div class="field">
         <label for="acclimatized">Acclimatized? <span class="req">*</span></label>
         <select id="acclimatized" required>
           <option value="" disabled selected>Select...</option>
-          <option value="yes">Yes</option>
-          <option value="no">No</option>
+          <option value="yes">Yes (been on the job >10 days)</option>
+          <option value="no">No (new or returning worker)</option>
         </select>
       </div>
     </section>
