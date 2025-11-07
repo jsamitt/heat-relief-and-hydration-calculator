@@ -1,16 +1,24 @@
+// Rest Break & Hydration Scheduler – ZIP + Manual + Validation + Tooltip
 document.addEventListener('DOMContentLoaded', () => {
   const output = document.getElementById('output');
 
-  // ZIP ONLY
+  // ZIP Search
   document.getElementById('search-zip').addEventListener('click', () => {
     const zip = document.getElementById('zip-input').value.trim();
     if (!zip) return;
     fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${zip}&country=US&count=1`)
       .then(r => r.json())
-      .then(d => d.results?.[0] ? fetchWeather(d.results[0].latitude, d.results[0].longitude) : alert('ZIP not found'));
+      .then(data => {
+        if (data.results?.[0]) {
+          const { latitude, longitude } = data.results[0];
+          fetchWeather(latitude, longitude);
+        } else {
+          alert('ZIP not found');
+        }
+      })
+      .catch(() => alert('ZIP search failed'));
   });
 
-  // Fetch Weather
   function fetchWeather(lat, lon) {
     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,cloud_cover,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph`)
       .then(r => r.json())
@@ -26,7 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Manual Inputs
   ['high-temp','humidity','cloud-cover','wind-speed','work-rate','acclimatized'].forEach(id => {
-    document.getElementById(id).addEventListener('input', calculateSchedule);
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', calculateSchedule);
   });
 
   function calculateSchedule() {
@@ -37,8 +46,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const workRate = document.getElementById('work-rate').value;
     const acclimatized = document.getElementById('acclimatized').value;
 
-    if (!highTempF || !humidity || !cloudCover || !windSpeed || !workRate || !acclimatized) {
-      output.innerHTML = '<p class="placeholder">Please complete all fields.</p>';
+    // === VALIDATION ===
+    if (highTempF < 0 || highTempF > 150) {
+      output.innerHTML = '<p class="placeholder" style="color:#d32f2f;">Temperature must be 0–150°F</p>';
+      return;
+    }
+    if (humidity < 0 || humidity > 100) {
+      output.innerHTML = '<p class="placeholder" style="color:#d32f2f;">Humidity must be 0–100%</p>';
+      return;
+    }
+    if (cloudCover < 0 || cloudCover > 100) {
+      output.innerHTML = '<p class="placeholder" style="color:#d32f2f;">Cloud cover must be 0–100%</p>';
+      return;
+    }
+    if (windSpeed < 0 || windSpeed > 100) {
+      output.innerHTML = '<p class="placeholder" style="color:#d32f2f;">Wind speed must be 0–100 mph</p>';
+      return;
+    }
+    if (!workRate || !acclimatized) {
+      output.innerHTML = '<p class="placeholder">Please select Work Rate and Acclimatized status.</p>';
       return;
     }
 
