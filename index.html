@@ -10,22 +10,22 @@
   <div class="container">
     <header>
       <h1>Heat Relief & Hydration Calculator</h1>
-      <p class="subtitle">Based on NIOSH/OSHA heat stress schedule recommendations</p>
+      <p class="subtitle">NIOSH/OSHA-based heat stress schedule</p>
     </header>
 
     <section class="inputs">
-      <!-- ZIP Fallback -->
-      <p style="text-align:center; margin:1.5rem 0 0.5rem 0; font-size:0.95rem; color:#555;">
-        Enter your ZIP code for current weather, or manually enter expected weather to simulate conditions.
-      </p>
-      <div style="text-align:center; margin:0.5rem 0 1.5rem 0;">
-        <input type="text" id="zip-input" placeholder="ZIP code (e.g., 10001)" style="padding:0.75rem; font-size:1rem; border:1px solid #ccc; border-radius:8px; width:160px;" />
+      <!-- ZIP + LOCATION BAR -->
+      <div style="text-align:center; margin:1.5rem 0;">
+        <button id="use-location" style="padding:0.75rem 1.5rem; font-size:1rem; background:#1976d2; color:white; border:none; border-radius:8px; cursor:pointer; margin-right:0.5rem;">
+          Use My Current Location
+        </button>
+        <input type="text" id="zip-input" placeholder="or ZIP code (e.g., 10001)" style="padding:0.75rem; font-size:1rem; border:1px solid #ccc; border-radius:8px; width:160px;" />
         <button id="search-zip" style="padding:0.75rem 1rem; font-size:1rem; background:#1976d2; color:white; border:none; border-radius:8px; cursor:pointer; margin-left:0.5rem;">
           Go
         </button>
       </div>
 
-      <h3>Weather Inputs (Auto-filled or Manual)</h3>
+      <h3>Weather Inputs</h3>
       <div class="field">
         <label for="high-temp">Temperature (°F) <span class="req">*</span></label>
         <input type="number" id="high-temp" min="50" max="130" step="0.5" placeholder="e.g., 88" required />
@@ -40,35 +40,35 @@
       </div>
       <div class="field">
         <label for="wind-speed">Wind Speed (mph) <span class="req">*</span></label>
-        <input type="number" id="wind-speed" min="0" max="30" step="0.5" placeholder="e.g., 5" required />
+        <input type="number" id="wind-speed" min="0" max="40" step="0.5" placeholder="e.g., 8" required />
       </div>
 
       <h3>Work Inputs</h3>
       <div class="field">
-        <label for="work-rate">Work Rate (Metabolic Rate) <span class="req">*</span></label>
+        <label for="work-rate">Work Rate <span class="req">*</span></label>
         <select id="work-rate" required>
           <option value="" disabled selected>Select...</option>
-          <option value="light">Light (e.g., walking)</option>
-          <option value="moderate">Moderate (e.g., lifting)</option>
-          <option value="heavy">Heavy (e.g., shovel work)</option>
+          <option value="light">Light</option>
+          <option value="moderate">Moderate</option>
+          <option value="heavy">Heavy</option>
         </select>
       </div>
       <div class="field">
-        <label for="acclimatized">Worker Acclimatized? <span class="req">*</span></label>
+        <label for="acclimatized">Acclimatized? <span class="req">*</span></label>
         <select id="acclimatized" required>
           <option value="" disabled selected>Select...</option>
-          <option value="yes">Yes (been on the job >10 days)</option>
-          <option value="no">No (new or returning worker)</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
         </select>
       </div>
     </section>
 
-    <section class="output" id="output" aria-live="polite">
-      <p class="placeholder">Enter inputs to calculate WBGT, REL/RAL, and schedule.</p>
+    <section class="output" id="output">
+      <p class="placeholder">Enter data to see recommendation.</p>
     </section>
 
     <footer class="disclaimer">
-      <p><strong>Disclaimer:</strong> Educational tool based on NIOSH/OSHA guidelines. Not a substitute for site-specific heat illness prevention programs.</p>
+      <p><strong>Disclaimer:</strong> Educational tool. Source: NIOSH/OSHA.</p>
     </footer>
   </div>
 
