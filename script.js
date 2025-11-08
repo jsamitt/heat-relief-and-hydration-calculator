@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (el) el.addEventListener('input', calculateSchedule);
   });
 
-  function calculateSchedule() {
+    function calculateSchedule() {
     const highTempF = +document.getElementById('high-temp').value || 0;
     const humidity = +document.getElementById('humidity').value || 0;
     const cloudCover = +document.getElementById('cloud-cover').value || 0;
@@ -101,7 +101,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const hyd = m > 300 ? 1.5 : m > 180 ? 1.25 : 1;
     const ouncesPer15Min = Math.round((hyd * 32) / 4);
-    const note = restMin > 30 ? 'Consider shifting to cooler area or indoors.' : 'Monitor for heat stress symptoms.';
+
+    // Conditional Note — only show if WBGT >= 70
+    const note = (wbgtF >= 70 && restMin > 30) 
+      ? 'Consider shifting to cooler area or indoors.' 
+      : (wbgtF >= 70) 
+        ? 'Monitor for heat stress symptoms.' 
+        : '';
 
     let riskMessage = '';
     if (wbgtF < 70) riskMessage = '<p style="color:#1976d2; font-weight:bold; margin:0.5rem 0;">Low risk of heat stress.</p>';
@@ -120,22 +126,21 @@ document.addEventListener('DOMContentLoaded', () => {
       <p><strong>Limit Applied:</strong> ${acclimatized === 'yes' ? 'REL (acclimatized worker limit)' : 'RAL (un-acclimatized worker limit)'}</p>
       <p><strong>Work Intensity:</strong> ${workRate.charAt(0).toUpperCase() + workRate.slice(1)} (${m} W/m²)</p>
 
-      ${riskMessage}
       <h3>Per-Hour Recommendation</h3>
+      ${riskMessage}
       <div style="background:#fff; padding:1rem; border-radius:8px; margin:1rem 0; border:1px solid #ddd;">
         <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Work:</strong> ${workMin.toFixed(0)} minutes</p>
-        <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Rest / cool down:</strong> ${restMin.toFixed(0)} minutes</p>
-        <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Hydrate:</strong> ${hyd.toFixed(1)} quarts (${ouncesPer15Min} oz every 15 min)</p>
-        <p style="margin:0.5rem 0; color:#d32f2f;"><strong>Note:</strong> ${note}</p>
+        <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Rest/seek cooler work area:</strong> ${restMin.toFixed(0)} minutes</p>
+        <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Hydration:</strong> ${hyd.toFixed(1)} quarts (${ouncesPer15Min} oz every 15 min)</p>
+        ${note ? `<p style="margin:0.5rem 0; color:#d32f2f;"><strong>Note:</strong> ${note}</p>` : ''}
       </div>
 
       <p class="note" style="margin-top:1rem; font-size:0.9rem; color:#555;">
-        <em>Note: Recommendations assume average worker fitness level and typical work clothing. Exercise additional caution in cases of heavy or protective clothing use, or poor physical condition.</em>
-        <em>Based on NIOSH 2016 Criteria and OSHA proposed heat rule. WBGT uses current or forecast conditions. Source: Open-Meteo.</em>
+        <em>Based on NIOSH 2016 Criteria and OSHA proposed heat rule. WBGT uses current or forecast conditions. Source: Open-Meteo (free API).</em>
       </p>
     `;
 
-    // TOOLTIP LOGIC — 100% WORKING
+    // TOOLTIP LOGIC
     document.querySelectorAll('.tooltip-trigger').forEach(trigger => {
       const content = trigger.nextElementSibling;
       trigger.addEventListener('mouseenter', () => content.classList.add('show'));
