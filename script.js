@@ -130,7 +130,8 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
 
       <p class="note" style="margin-top:1rem; font-size:0.9rem; color:#555;">
-        <em>Based on NIOSH 2016 Criteria and OSHA proposed heat rule. WBGT uses current or forecast conditions. Source: Open-Meteo (free API).</em>
+        <em>Note: Recommendations assume average worker fitness level and typical work clothing. Exercise additional caution in cases of heavy or protective clothing use, or poor physical condition.</em>
+        <em>Based on NIOSH 2016 Criteria and OSHA proposed heat rule. WBGT uses current or forecast conditions. Source: Open-Meteo.</em>
       </p>
     `;
 
