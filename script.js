@@ -2,10 +2,10 @@
 document.addEventListener('DOMContentLoaded', () => {
   const output = document.getElementById('output');
 
-    // === 2. ZIP Code Search (FIXED: small zip codes work) ===
+    // === 2. ZIP Code Search (FINAL: small zip WORKS) ===
   document.getElementById('search-zip').addEventListener('click', () => {
     const zip = document.getElementById('zip-input').value.trim();
-    if (!zip) return;
+    if (!zip || zip.length !== 5 || !/^\d+$/.test(zip)) return;
 
     // TRY Open-Meteo
     fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${zip}&country=US&count=1`)
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const { latitude, longitude } = data.results[0];
           fetchWeather(latitude, longitude);
         } else {
-          // FALLBACK: US Census (for small zip codes)
+          // FALLBACK: US Census (small zip)
           fetch(`https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=${zip}&benchmark=2020&format=json`)
             .then(r => r.json())
             .then(census => {
