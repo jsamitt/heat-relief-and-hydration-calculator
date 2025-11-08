@@ -126,8 +126,9 @@ document.addEventListener('DOMContentLoaded', () => {
       <p><strong>Limit Applied:</strong> ${acclimatized === 'yes' ? 'REL (acclimatized worker limit)' : 'RAL (un-acclimatized worker limit)'}</p>
       <p><strong>Work Intensity:</strong> ${workRate.charAt(0).toUpperCase() + workRate.slice(1)} (${m} W/m²)</p>
 
-      <h3>Per-Hour Recommendation</h3>
       ${riskMessage}
+      <h3>Per-Hour Recommendation</h3>
+      
       <div style="background:#fff; padding:1rem; border-radius:8px; margin:1rem 0; border:1px solid #ddd;">
         <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Work:</strong> ${workMin.toFixed(0)} minutes</p>
         <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Rest/seek cooler work area:</strong> ${restMin.toFixed(0)} minutes</p>
@@ -136,7 +137,8 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
 
       <p class="note" style="margin-top:1rem; font-size:0.9rem; color:#555;">
-        <em>Based on NIOSH 2016 Criteria and OSHA proposed heat rule. WBGT uses current or forecast conditions. Source: Open-Meteo (free API).</em>
+        <em>Note: Recommendations assume average worker fitness level and typical work clothing. Exercise additional caution in cases of heavy or protective clothing use, or poor physical condition.</em>
+        <em>Based on NIOSH 2016 Criteria and OSHA proposed heat rule. WBGT uses current or forecast conditions. Source: Open-Meteo.</em>
       </p>
     `;
 
