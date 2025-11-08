@@ -131,8 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
       
       <div style="background:#fff; padding:1rem; border-radius:8px; margin:1rem 0; border:1px solid #ddd;">
         <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Work:</strong> ${workMin.toFixed(0)} minutes</p>
-        <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Rest/seek cooler work area:</strong> ${restMin.toFixed(0)} minutes</p>
-        <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Hydration:</strong> ${hyd.toFixed(1)} quarts (${ouncesPer15Min} oz every 15 min)</p>
+        <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Rest / cool down:</strong> ${restMin.toFixed(0)} minutes</p>
+        <p style="margin:0.5rem 0; font-size:1.1rem;"><strong>Hydrate:</strong> ${hyd.toFixed(1)} quarts (${ouncesPer15Min} oz every 15 min)</p>
         ${note ? `<p style="margin:0.5rem 0; color:#d32f2f;"><strong>Note:</strong> ${note}</p>` : ''}
       </div>
 
